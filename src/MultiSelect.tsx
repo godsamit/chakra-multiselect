@@ -424,6 +424,8 @@ export const SelectInput = memo<Pick<SelectProps, 'size' | 'disabled'>>(
 )
 SelectInput.displayName = 'SelectInput'
 
+type SizeKey = 'sm' | 'md' | 'lg'
+
 export const SelectedItem = memo<SelectedItemProps>(
   ({ value: _value, label: _label, ...props }) => {
     const { onClick, __css, value, label, ...itemProps } = useSelectedItem({
@@ -434,17 +436,19 @@ export const SelectedItem = memo<SelectedItemProps>(
     })
 
     const tagSizeProps =
-      {
-        sm: {
-          fontSize: 'sm',
-        },
-        md: {
-          fontSize: 'md',
-        },
-        lg: {
-          fontSize: 'lg',
-        },
-      }[props.size || ('md' as any)] || {}
+      (
+        {
+          sm: {
+            fontSize: 'sm',
+          },
+          md: {
+            fontSize: 'md',
+          },
+          lg: {
+            fontSize: 'lg',
+          },
+        } as Record<SizeKey, { fontSize: string }>
+      )[(props.size as SizeKey) || 'md'] || {}
 
     return (
       <Tag
@@ -473,20 +477,22 @@ export const SelectToggleButton = memo<IconButtonProps>((props) => {
   } = useSelectButton(props)
 
   const sizeProps =
-    {
-      sm: {
-        height: '6',
-        width: '6',
-      },
-      md: {
-        height: '8',
-        width: '8',
-      },
-      lg: {
-        height: '10',
-        width: '10',
-      },
-    }[size] || {}
+    (
+      {
+        sm: {
+          height: '6',
+          width: '6',
+        },
+        md: {
+          height: '8',
+          width: '8',
+        },
+        lg: {
+          height: '10',
+          width: '10',
+        },
+      } as Record<SizeKey, { height: string; width: string }>
+    )[size as SizeKey] || {}
 
   return (
     <IconButton
@@ -528,20 +534,22 @@ export const SelectClearButton = memo<IconButtonProps>((props) => {
   } = useClearButton(props)
 
   const sizeProps =
-    {
-      sm: {
-        height: '6',
-        width: '6',
-      },
-      md: {
-        height: '8',
-        width: '8',
-      },
-      lg: {
-        height: '10',
-        width: '10',
-      },
-    }[size] || {}
+    (
+      {
+        sm: {
+          height: '6',
+          width: '6',
+        },
+        md: {
+          height: '8',
+          width: '8',
+        },
+        lg: {
+          height: '10',
+          width: '10',
+        },
+      } as Record<SizeKey, { height: string; width: string }>
+    )[size as SizeKey] || {}
 
   return (
     <IconButton
