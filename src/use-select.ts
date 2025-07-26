@@ -248,13 +248,11 @@ const useKeys = (userKeys: {
     return {
       ...rest,
       onKeyDown: (e: KeyboardEvent) => {
-        const { keyCode, key, shiftKey: shift, metaKey: meta } = e
-        const handler = userKeys[key] || userKeys[keyCode]
+        const { key, shiftKey: shift, metaKey: meta } = e
+        const handler = userKeys[key as keyof typeof userKeys]
         if (handler) {
           handler(
             {
-              keyCode,
-              key,
               shift,
               meta,
             },
@@ -501,7 +499,10 @@ export function useSelect({
   // If in create mode, fabricate an option and prepend it to options
   options = useMemo(() => {
     if (create) {
-      return [{ created: true, ...getOption(searchValue ?? "+ Create New") }, ...options!]
+      return [
+        { created: true, ...getOption(searchValue ?? '+ Create New') },
+        ...options!,
+      ]
     }
     return options
   }, [create, searchValue, options, getOption])
@@ -1242,7 +1243,7 @@ export function useMultiSelect(
           break
         case ChangeActions.MultiCreate:
           const nextValue = next as Option[]
-          const created = next[nextValue.length - 1]
+          const created = nextValue[nextValue.length - 1]
           setNextValue(nextValue, change)
           setOptions((o) => {
             const opt = getOption(created as any)

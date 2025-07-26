@@ -26,11 +26,11 @@
     "node": ">=14"
   },
   "scripts": {
-    "build": "microbundle",
+    "build": "microbundle --tsconfig tsconfig.build.json",
     "dev": "run-p start example:start",
     "prepare": "run-s build",
     "postbuild": "run-s move:types",
-    "move:types": "mv dist/src/* ./dist/ && rmdir dist/src",
+    "move:types": "node move-types.js",
     "start": "microbundle watch --no-compress",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",
@@ -44,7 +44,6 @@
     "predeploy": "run-s example:build docs:build",
     "deploy": "gh-pages -d example/build"
   },
-  "dependencies": {},
   "peerDependencies": {
     "@chakra-ui/react": ">=1",
     "@chakra-ui/react-utils": ">=1",
@@ -92,6 +91,7 @@
     "react-scripts": "5.0.1",
     "rimraf": "^3.0.2",
     "rollup-plugin-typescript": "^1.0.1",
+    "shelljs": "^0.10.0",
     "typedoc": "^0.23.14",
     "typescript": "^4.8.3"
   },
