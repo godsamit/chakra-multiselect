@@ -17,6 +17,7 @@ import {
   useStyles,
   BoxProps,
   IconButtonProps,
+  Flex,
 } from '@chakra-ui/react'
 import {
   FC,
@@ -50,13 +51,17 @@ import {
   useClearButton,
   useId,
   SelectIdProvider,
+  useSelectContext,
 } from './use-select'
 
 // @see https://github.com/chakra-ui/chakra-ui/issues/140
 
+type SizeKey = 'sm' | 'md' | 'lg'
+
 export type SelectIconButtonProps = Omit<IconButtonProps, 'icon'> & {
   icon?: JSXElementConstructor<any>
 }
+
 export interface SelectItem {
   value: any
   label?: string
@@ -81,7 +86,7 @@ export interface SelectControlProps
 }
 
 export type SelectListProps = HTMLChakraProps<'ul'> &
-  Pick<SelectProps, 'size'> & { emptyResultsLabel?: string }
+  Pick<SelectProps, 'size' | 'create'> & { emptyResultsLabel?: string }
 export type SelectedListProps = BoxProps & {
   size?: SelectProps['size']
   selectedItems?: SelectItem[]
@@ -206,7 +211,7 @@ export const SelectOptionLabel = memo<
   <HStack justifyContent='space-between' w='full'>
     <Box>{label}</Box>
     {!!created && (
-      <Tag flexShrink={0}>
+      <Tag flexShrink={0} colorScheme='primary'>
         <TagLabel fontSize='xs' fontWeight='bold'>
           New
         </TagLabel>
@@ -215,6 +220,61 @@ export const SelectOptionLabel = memo<
   </HStack>
 ))
 SelectOptionLabel.displayName = 'SelectOptionLabel'
+
+const SelectAddIcon: FC<HTMLChakraProps<'svg'> & { isActive?: boolean }> = ({
+  width = 4,
+  height = 4,
+  ...props
+}) => (
+  <ChakraSvg
+    viewBox='0 0 24 24'
+    stroke='currentColor'
+    fill='none'
+    width={width}
+    height={height}
+    {...props}
+  >
+    <line
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='2'
+      x1='0'
+      x2='24'
+      y1='12'
+      y2='12'
+    />
+    <line
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='2'
+      x1='12'
+      x2='12'
+      y1='0'
+      y2='24'
+    />
+  </ChakraSvg>
+)
+
+export const SelectCreateHintItem = memo(() => {
+  const { highlightedRef, ...itemProps } = useSelectItem({
+    value: null,
+    label: null,
+    index: -1,
+    selected: false,
+  })
+  return (
+    <chakra.li
+      ref={highlightedRef && highlightedRef}
+      role='option'
+      {...itemProps}
+    >
+      <Flex alignItems='center' opacity={0.6} gap={2}>
+        <SelectAddIcon /> Create New
+      </Flex>
+    </chakra.li>
+  )
+})
+SelectCreateHintItem.displayName = 'SelectCreateHintItem'
 
 export const SelectOptionItem = memo<SelectOptionItemProps>(
   ({ value, label, index, selected, created, ...props }) => {
@@ -294,6 +354,8 @@ export const SelectList = memo<SelectListProps>((props) => {
     ...listProps
   } = useSelectList()
 
+  const { searchValue } = useSelectContext()
+
   const dropdownVisible = isOpen
   const optionItemProps = useCallback((option: string, index: number) => {
     const optionItem = getOption(option) as any
@@ -338,6 +400,7 @@ export const SelectList = memo<SelectListProps>((props) => {
       {...listProps}
       {...props}
     >
+      {props.create && !searchValue && <SelectCreateHintItem />}
       {dropdownVisible && visibleOptions.length > 0 ? (
         <div
           style={{
@@ -423,8 +486,6 @@ export const SelectInput = memo<Pick<SelectProps, 'size' | 'disabled'>>(
   }
 )
 SelectInput.displayName = 'SelectInput'
-
-type SizeKey = 'sm' | 'md' | 'lg'
 
 export const SelectedItem = memo<SelectedItemProps>(
   ({ value: _value, label: _label, ...props }) => {
@@ -681,7 +742,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
           {...actionGroupProps}
         />
       </SelectControl>
-      <SelectList size={size} {...listProps} />
+      <SelectList size={size} create={props.create} {...listProps} />
     </Select>
   )
 }

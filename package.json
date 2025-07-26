@@ -26,7 +26,7 @@
     "node": ">=14"
   },
   "scripts": {
-    "build": "microbundle --tsconfig tsconfig.build.json",
+    "build": "microbundle",
     "dev": "run-p start example:start",
     "prepare": "run-s build",
     "postbuild": "run-s move:types",
