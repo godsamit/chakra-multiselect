@@ -498,11 +498,10 @@ export function useSelect({
     return options
   }, [options, resolvedSearchValue, getOption])
 
-  // If in create mode and we have a search value, fabricate
-  // an option for that searchValue and prepend it to options
+  // If in create mode, fabricate an option and prepend it to options
   options = useMemo(() => {
-    if (create && searchValue) {
-      return [{ created: true, ...getOption(searchValue) }, ...options!]
+    if (create) {
+      return [{ created: true, ...getOption(searchValue ?? "+ Create New") }, ...options!]
     }
     return options
   }, [create, searchValue, options, getOption])
