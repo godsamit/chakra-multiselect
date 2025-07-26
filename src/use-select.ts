@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   useMultiStyleConfig,
   usePopper,
@@ -323,6 +325,7 @@ export interface UseSelectReturn {
   getInputProps: AnyFunc
   getOptionProps: AnyFunc
   getOption: GetOption
+  inputRef: MutableRefObject<any>
   optionsRef: MutableRefObject<any>
   controlRef: MutableRefObject<any>
   clearAll: () => void
@@ -496,13 +499,11 @@ export function useSelect({
     return options
   }, [options, resolvedSearchValue, getOption])
 
-  // If in create mode, fabricate an option and prepend it to options
+  // If in create mode and we have a search value, fabricate
+  // an option for that searchValue and prepend it to options
   options = useMemo(() => {
-    if (create) {
-      return [
-        { created: true, ...getOption(searchValue ?? '+ Create New') },
-        ...options!,
-      ]
+    if (create && searchValue) {
+      return [{ created: true, ...getOption(searchValue) }, ...options!]
     }
     return options
   }, [create, searchValue, options, getOption])
@@ -554,7 +555,7 @@ export function useSelect({
           ...old,
           highlightedIndex: Math.min(
             Math.max(
-              0,
+              create ? -1 : 0,
               typeof value === 'function' ? value(old.highlightedIndex) : value
             ),
             _options.length - 1
@@ -744,6 +745,12 @@ export function useSelect({
         ...rest
       } = {} as any
     ) => {
+      const p =
+        hasMultiSelection && !searchValue
+          ? searchPlaceholder
+          : !selectedOption?.label
+          ? placeholder
+          : undefined
       return getKeyProps({
         [refKey]: (el: HTMLElement) => {
           ;(inputRef.current as any) = el
@@ -757,12 +764,7 @@ export function useSelect({
             : selectedOption
             ? selectedOption?.label
             : '') || '',
-        placeholder:
-          hasMultiSelection && !searchValue
-            ? searchPlaceholder
-            : !selectedOption?.label
-            ? placeholder
-            : undefined,
+        placeholder: p,
         onChange: (e: any) => {
           handleSearchValueChange(e)
           if (onChange) {
@@ -782,6 +784,8 @@ export function useSelect({
           }
         },
         onBlur: (e: any) => {
+          if (inputRef?.current)
+            (inputRef.current as HTMLInputElement).placeholder! = p ?? ''
           if (onBlur) {
             e.persist()
             ;(onBlurRef.current as any).cb = onBlur
@@ -808,7 +812,7 @@ export function useSelect({
     (
       { index, key = index, onClick, onMouseEnter, option, ...rest } = {} as any
     ) => {
-      if (typeof index !== 'number' || index < 0) {
+      if (typeof index !== 'number') {
         throw new Error(
           `useSelect: The getOptionProps prop getter requires an index property, eg. 'getOptionProps({index: 1})'`
         )
@@ -819,6 +823,17 @@ export function useSelect({
         option,
         ...rest,
         onClick: (e: any) => {
+          // Placeholder for new item has index of -1
+          if (create && index === -1) {
+            if (!inputRef?.current) return
+            if (!multi) clearAll()
+            requestAnimationFrame(() => {
+              ;(inputRef.current! as HTMLInputElement).focus()
+              ;(inputRef.current! as HTMLInputElement).placeholder =
+                'New option name...'
+              Close()
+            })
+          }
           if (option.selected !== undefined && option.selected) {
             removeValue(option.value)
           } else {
@@ -895,6 +910,7 @@ export function useSelect({
     clearable: hasMultiSelection,
     disabled,
     clearAll,
+    inputRef,
     optionsRef,
     controlRef,
     popper,
@@ -1086,7 +1102,8 @@ export function useSelectItem({ selected, ...props }: any = {}) {
   return useMemo(() => {
     const option = {
       value: props.value,
-      label: props.label || labelFromValue(props.value),
+      label:
+        props.label !== undefined ? props.label : labelFromValue(props.value),
       selected,
     }
     return {
