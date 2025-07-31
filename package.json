@@ -7,29 +7,23 @@
   "repository": "bmartel/chakra-multiselect",
   "homepage": "http://bmartel.github.io/chakra-multiselect",
   "source": "./src/index.tsx",
-  "main": "./dist/index.js",
-  "module": "./dist/index.module.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.modern.mjs"
-      }
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
     }
   },
-  "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=14"
   },
   "scripts": {
-    "build": "microbundle",
+    "build": "tsup",
     "dev": "run-p start example:start",
     "prepare": "run-s build",
-    "postbuild": "run-s move:types",
     "move:types": "node move-types.js",
     "start": "microbundle watch --no-compress",
     "test": "run-s test:unit test:lint test:build",
@@ -82,7 +76,6 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "framer-motion": "^7.3.2",
     "gh-pages": "^3.2.3",
-    "microbundle": "^0.15.1",
     "minimatch": "3.0.5",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
@@ -90,8 +83,8 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "rimraf": "^3.0.2",
-    "rollup-plugin-typescript": "^1.0.1",
     "shelljs": "^0.10.0",
+    "tsup": "^8.5.0",
     "typedoc": "^0.23.14",
     "typescript": "^4.8.3"
   },
