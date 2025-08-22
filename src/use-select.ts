@@ -140,8 +140,10 @@ const defaultScrollToIndex: ScrollToIndex = (
     scrollIntoView(inputRef.current, optionsRef.current)
   }
 }
-export const labelFromValue = (value: string): string =>
-  `${value.charAt(0).toUpperCase()}${value.substring(1)}`
+export const labelFromValue = (value: string | number): string => {
+  const stringValue = typeof value === 'number' ? value.toString() : value
+  return `${stringValue.charAt(0).toUpperCase()}${stringValue.substring(1)}`
+}
 export const idFromOption = (option: Option, prefix = ''): string =>
   `${prefix}${option?.value}`
 const defaultGetOption: GetOption = (option) =>
