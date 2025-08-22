@@ -140,7 +140,8 @@ const defaultScrollToIndex: ScrollToIndex = (
     scrollIntoView(inputRef.current, optionsRef.current)
   }
 }
-export const labelFromValue = (value: string | number): string => {
+export const labelFromValue = (value?: string | number): string => {
+  if (!value) return ''
   const stringValue = typeof value === 'number' ? value.toString() : value
   return `${stringValue.charAt(0).toUpperCase()}${stringValue.substring(1)}`
 }
