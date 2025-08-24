@@ -82,7 +82,9 @@ export type SelectFilter = (
   getOption: GetOption
 ) => Option[]
 
-export type SelectRemoveValue = (option: string | number | Option) => void
+export type SelectRemoveValue = (
+  option: string | number | Record<string, string | number>
+) => void
 
 export type SelectSetOpen = (open: boolean) => void
 
