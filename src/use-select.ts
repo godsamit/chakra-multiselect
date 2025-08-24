@@ -82,7 +82,7 @@ export type SelectFilter = (
   getOption: GetOption
 ) => Option[]
 
-export type SelectRemoveValue = (index: number) => void
+export type SelectRemoveValue = (option: string | number | Option) => void
 
 export type SelectSetOpen = (open: boolean) => void
 
@@ -148,7 +148,7 @@ export const labelFromValue = (value?: string | number): string => {
 export const idFromOption = (option: Option, prefix = ''): string =>
   `${prefix}${option?.value}`
 const defaultGetOption: GetOption = (option) =>
-  typeof option === 'string'
+  typeof option === 'string' || typeof option === 'number'
     ? { value: option, label: labelFromValue(option) }
     : option
 const defaultGetDebounce: GetDebounce = (options) =>
@@ -1080,8 +1080,11 @@ export function useSelectedItem(
   const { removeValue } = useSelectedContext()
   const styles = useStyles()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onClick = useCallback(() => removeValue(props.value), [props.value])
+  const onClick = useCallback(
+    () => removeValue({ value: props.value, label: props.label }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.value, props.label]
+  )
 
   return useMemo(
     () => ({
