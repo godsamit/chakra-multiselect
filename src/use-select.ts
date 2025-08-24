@@ -621,23 +621,22 @@ export function useSelect({
 
   const removeValue = useCallback(
     (v: number | string | Record<string, string | number>) => {
-      const isIndex = typeof v === 'number'
       const _multi = Array.isArray(valueRef.current)
       const _value = (
         _multi ? valueRef.current : [valueRef.current]
       ) as Array<string>
-      const _next = _value.filter((_v: any, i: number) =>
-        isIndex ? i !== v : getOption(v as any).value !== getOption(_v).value
+      const _next = _value.filter(
+        (_v: any) => getOption(v as any).value !== getOption(_v).value
       )
       if (_multi) {
         ;(onChangeRef.current as any)(_next, {
           action: ChangeActions.MultiRemove,
-          value: getOption(isIndex ? (_value as Array<any>)[v] : v).value,
+          value: getOption(v as any).value,
         })
       } else {
         ;(onChangeRef.current as any)(_next[0] || '', {
           action: ChangeActions.SingleRemove,
-          value: getOption(isIndex ? (_value as Array<any>)[v] : v).value,
+          value: getOption(v as any).value,
         })
       }
     },
