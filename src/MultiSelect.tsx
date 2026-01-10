@@ -256,7 +256,11 @@ const SelectAddIcon: FC<HTMLChakraProps<'svg'> & { isActive?: boolean }> = ({
 )
 
 export const SelectCreateHintItem = memo(() => {
-  const { highlightedRef, ...itemProps } = useSelectItem({
+  const {
+    highlightedRef,
+    multi: _multi,
+    ...itemProps
+  } = useSelectItem({
     value: null,
     label: null,
     index: -1,
@@ -277,7 +281,7 @@ export const SelectCreateHintItem = memo(() => {
 SelectCreateHintItem.displayName = 'SelectCreateHintItem'
 
 export const SelectOptionItem = memo<SelectOptionItemProps>(
-  ({ value, label, index, selected, created, ...props }) => {
+  ({ value, label, index, selected, created, key: _key, ...props }) => {
     const { highlightedRef, option, multi, ...itemProps } = useSelectItem({
       value,
       label,
@@ -309,7 +313,7 @@ export type SelectOptionVirtualItemProps = {
 }
 
 export const SelectOptionVirtualItem = memo<SelectOptionVirtualItemProps>(
-  ({ index, size, start, item, optionItemProps, ...rest }: any) => {
+  ({ index, size, start, item, optionItemProps, key: _key, ...rest }: any) => {
     return (
       <SelectOptionItem
         {...optionItemProps(item.value, index)}
@@ -344,6 +348,7 @@ export const EmptySelectResults = memo<{ label?: string }>(
 EmptySelectResults.displayName = 'EmptySelectResults'
 
 export const SelectList = memo<SelectListProps>((props) => {
+  const { create: _create, size: _size, ...ulProps } = props
   const {
     __css,
     visibleOptions,
@@ -398,7 +403,7 @@ export const SelectList = memo<SelectListProps>((props) => {
       aria-orientation='vertical'
       role='listbox'
       {...listProps}
-      {...props}
+      {...ulProps}
     >
       {props.create && !searchValue && <SelectCreateHintItem />}
       {dropdownVisible && visibleOptions.length > 0 ? (
